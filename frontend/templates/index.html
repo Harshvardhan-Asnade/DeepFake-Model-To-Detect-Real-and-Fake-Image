@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGuard - AI-Powered Deepfake Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+
+        <header class="navbar">
+            <div class="nav-left">
+                <div class="logo">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>DeepGuard</span>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span>Model Ready</span>
+                </div>
+            </div>
+            <nav class="nav-center">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url_for('index') }}" class="nav-link active">Analysis</a>
+                <a href="{{ url_for('history') }}" class="nav-link">History</a>
+                <a href="#" class="nav-link">Settings</a>
+            </nav>
+            <div class="nav-right">
+                <i class="fa-regular fa-bell nav-icon"></i>
+                <div class="user-profile">
+                    <img src="https://i.pravatar.cc/150?img=3" alt="User Avatar">
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+
+            <section class="hero-section">
+                <h1 class="hero-title">
+                    AI-Powered<br>
+                    <span class="gradient-text">Deepfake Detection</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Leverage cutting-edge artificial intelligence to identify and protect<br>
+                    against manipulated media in real-time.
+                </p>
+            </section>
+
+            <section class="stats-grid">
+                <div class="glass-card stat-card">
+                    <div class="stat-icon-container">
+                        <i class="fa-solid fa-database stat-icon"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h2 class="stat-value">150K+</h2>
+                        <p class="stat-label">Training Images</p>
+                    </div>
+                </div>
+                <div class="glass-card stat-card">
+                    <div class="stat-icon-container">
+                        <i class="fa-solid fa-bullseye stat-icon"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h2 class="stat-value">95%+</h2>
+                        <p class="stat-label">Accuracy</p>
+                    </div>
+                </div>
+                <div class="glass-card stat-card">
+                    <div class="stat-icon-container">
+                        <i class="fa-solid fa-stopwatch stat-icon"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h2 class="stat-value">&lt;1s</h2>
+                        <p class="stat-label">Detection Time</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="main-split">
+
+                <div class="glass-card upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <!-- Added ID for functionality -->
+                        <div id="uploadPlaceholder">
+                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                            <h3 class="upload-title">Upload Image to Analyze</h3>
+                            <p class="upload-desc">Drag and drop your image here or click to browse.<br>Supports JPG,
+                                PNG, WEBP.</p>
+                            <button id="browseBtn" class="btn-gradient">Choose File</button>
+                            <input type="file" id="fileInput" accept="image/*" hidden>
+                        </div>
+                        <!-- Added Preview Container to match functionality -->
+                        <div id="previewContainer" class="hidden">
+                            <img id="imagePreview" alt="Preview"
+                                style="max-width: 100%; max-height: 300px; border-radius: 8px; margin-bottom: 20px;">
+                            <div style="display: flex; gap: 10px; justify-content: center;">
+                                <button id="analyzeBtn" class="btn-gradient">Analyze Image</button>
+                                <button id="removeBtn" class="btn-gradient"
+                                    style="background: var(--alert-red);">Remove</button>
+                            </div>
+                        </div>
+                        <!-- Added Results Container to match functionality -->
+                        <div id="resultsCard" class="hidden" style="margin-top: 20px;">
+                            <h3 class="result result-badge"></h3>
+                            <div class="confidence-meter" style="margin: 15px 0;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>Confidence</span>
+                                    <span id="confidenceValue">0%</span>
+                                </div>
+                                <div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px;">
+                                    <div id="confidenceFill"
+                                        style="height: 100%; width: 0%; background: var(--success-green); border-radius: 4px;">
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="analyzeAnotherBtn" class="btn-gradient">Analyze Another</button>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="glass-card recent-analyses">
+                    <h3 class="section-title">Recent Analyses</h3>
+                    <ul class="analysis-list">
+                        <li class="analysis-item">
+                            <img src="https://source.unsplash.com/random/48x48?portrait,woman" alt="Image Thumbnail"
+                                class="thumbnail">
+                            <div class="analysis-info">
+                                <span class="filename">Image_001.jpg</span>
+                                <span class="result genuine">58% Genuine</span>
+                                <span class="time">3 minutes ago</span>
+                            </div>
+                            <i class="fa-solid fa-circle-check status-icon success"></i>
+                        </li>
+                        <li class="analysis-item">
+                            <div class="thumbnail video-thumbnail">
+                                <i class="fa-solid fa-play"></i>
+                            </div>
+                            <div class="analysis-info">
+                                <span class="filename">Video_002.mp4</span>
+                                <span class="result deepfake">75% Deepfake</span>
+                                <span class="time">3 minutes ago</span>
+                            </div>
+                            <i class="fa-solid fa-triangle-exclamation status-icon alert"></i>
+                        </li>
+                        <li class="analysis-item">
+                            <div class="thumbnail video-thumbnail">
+                                <i class="fa-solid fa-play"></i>
+                            </div>
+                            <div class="analysis-info">
+                                <span class="filename">Video_002.mp4</span>
+                                <span class="result deepfake">75% Deepfake</span>
+                                <span class="time">3 minutes ago</span>
+                            </div>
+                            <i class="fa-solid fa-triangle-exclamation status-icon alert"></i>
+                        </li>
+                    </ul>
+                </aside>
+            </section>
+
+        </main>
+
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Us</a>
+            </div>
+            <div class="footer-social">
+                <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-github"></i></a>
+            </div>
+        </footer>
+    </div>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay"
+        style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000;">
+        <div class="spinner"
+            style="width: 50px; height: 50px; border: 4px solid var(--accent-purple); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;">
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <style>
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</body>
+
+</html>

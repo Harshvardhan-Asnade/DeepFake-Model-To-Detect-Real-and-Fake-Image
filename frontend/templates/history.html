@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis History - DeepGuard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Reusing Navbar -->
+        <header class="navbar">
+            <div class="nav-left">
+                <div class="logo">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>DeepGuard</span>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span>Model Ready</span>
+                </div>
+            </div>
+            <nav class="nav-center">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url_for('index') }}" class="nav-link">Analysis</a>
+                <a href="{{ url_for('history') }}" class="nav-link active">History</a>
+                <a href="#" class="nav-link">Settings</a>
+            </nav>
+            <div class="nav-right">
+                <i class="fa-regular fa-bell nav-icon"></i>
+                <div class="user-profile">
+                    <img src="https://i.pravatar.cc/150?img=3" alt="User Avatar">
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+            <h1 class="page-title" style="text-align: left; margin-bottom: 1.5rem;">Analysis History</h1>
+
+            <!-- Filters Toolbar -->
+            <div class="filters-toolbar">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search past analyses...">
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn">Date Range <i class="fa-solid fa-chevron-down"></i></button>
+                    <button class="filter-btn">Result Type <i class="fa-solid fa-chevron-down"></i></button>
+                </div>
+                <button class="btn-outline export-btn"><i class="fa-solid fa-download"></i> Export CSV</button>
+            </div>
+
+            <!-- History Table -->
+            <div class="glass-card history-container">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th width="40"><input type="checkbox"></th>
+                            <th>Thumbnail</th>
+                            <th>Filename</th>
+                            <th>Date Submitted</th>
+                            <th>Type</th>
+                            <th>Result</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Row 1 -->
+                        <tr class="selected-row">
+                            <td><input type="checkbox" checked></td>
+                            <td>
+                                <div class="table-thumb">
+                                    <img src="https://source.unsplash.com/random/50x50?video=1" alt="thumb">
+                                    <i class="fa-solid fa-play play-overlay"></i>
+                                </div>
+                            </td>
+                            <td>Video_005.mp4</td>
+                            <td>Oct 26, 2023, 10:45 AM</td>
+                            <td><i class="fa-solid fa-video type-icon"></i></td>
+                            <td><span class="badge badge-fake">99% Deepfake <i
+                                        class="fa-solid fa-triangle-exclamation"></i></span></td>
+                            <td><button class="btn-view">View Report</button></td>
+                        </tr>
+                        <!-- Row 2 -->
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>
+                                <div class="table-thumb">
+                                    <img src="https://source.unsplash.com/random/50x50?portrait=1" alt="thumb">
+                                </div>
+                            </td>
+                            <td>Image_012.jpg</td>
+                            <td>Oct 25, 2023, 3:30 PM</td>
+                            <td><i class="fa-regular fa-image type-icon"></i></td>
+                            <td><span class="badge badge-real">Genuine <i class="fa-solid fa-circle-check"></i></span>
+                            </td>
+                            <td><button class="btn-view">View Report</button></td>
+                        </tr>
+                        <!-- Row 3 -->
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>
+                                <div class="table-thumb">
+                                    <img src="https://source.unsplash.com/random/50x50?portrait=2" alt="thumb">
+                                </div>
+                            </td>
+                            <td>Image_001.jpg</td>
+                            <td>Oct 24, 2023, 9:15 AM</td>
+                            <td><i class="fa-regular fa-image type-icon"></i></td>
+                            <td><span class="badge badge-fake">98% Deepfake <i
+                                        class="fa-solid fa-triangle-exclamation"></i></span></td>
+                            <td><button class="btn-view">View Report</button></td>
+                        </tr>
+                        <!-- Row 4 -->
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>
+                                <div class="table-thumb">
+                                    <img src="https://source.unsplash.com/random/50x50?news" alt="thumb">
+                                    <i class="fa-solid fa-play play-overlay"></i>
+                                </div>
+                            </td>
+                            <td>Video_News_Clip.mp4</td>
+                            <td>Oct 23, 2023, 6:00 PM</td>
+                            <td><i class="fa-solid fa-video type-icon"></i></td>
+                            <td><span class="badge badge-real">Genuine <i class="fa-solid fa-circle-check"></i></span>
+                            </td>
+                            <td><button class="btn-view">View Report</button></td>
+                        </tr>
+                        <!-- Row 5 -->
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>
+                                <div class="table-thumb">
+                                    <img src="https://source.unsplash.com/random/50x50?speech" alt="thumb">
+                                    <i class="fa-solid fa-play play-overlay"></i>
+                                </div>
+                            </td>
+                            <td>Speech_Deepfake.mp4</td>
+                            <td>Oct 22, 2023, 11:20 AM</td>
+                            <td><i class="fa-solid fa-video type-icon"></i></td>
+                            <td><span class="badge badge-fake">85% Deepfake <i
+                                        class="fa-solid fa-triangle-exclamation"></i></span></td>
+                            <td><button class="btn-view">View Report</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="pagination">
+                    <span class="page-info">Showing 1-10 of 156 results</span>
+                    <div class="page-controls">
+                        <button class="page-btn">Previous</button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <span class="pagination-dots">...</span>
+                        <button class="page-btn">16</button>
+                        <button class="page-btn">Next</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Us</a>
+            </div>
+            <div class="footer-social">
+                <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-github"></i></a>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>

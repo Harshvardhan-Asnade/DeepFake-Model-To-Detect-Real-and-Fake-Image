@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Result - DeepGuard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Reusing Navbar -->
+        <header class="navbar">
+            <div class="nav-left">
+                <div class="logo">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>DeepGuard</span>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span>Model Ready</span>
+                </div>
+            </div>
+            <nav class="nav-center">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url_for('index') }}" class="nav-link active">Analysis</a>
+                <a href="{{ url_for('history') }}" class="nav-link">History</a>
+                <a href="#" class="nav-link">Settings</a>
+            </nav>
+            <div class="nav-right">
+                <i class="fa-regular fa-bell nav-icon"></i>
+                <div class="user-profile">
+                    <img src="https://i.pravatar.cc/150?img=3" alt="User Avatar">
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+            </div>
+        </header>
+
+        <main class="content results-content">
+            <h1 class="page-title">Analysis Result: <span id="resultFilename">Image_001.jpg</span></h1>
+
+            <div class="results-grid">
+                <!-- Left Column: Image & Heatmap -->
+                <div class="glass-card result-preview-card">
+                    <div class="preview-wrapper">
+                        <img id="resultImage" src="" alt="Analyzed Image" class="main-preview">
+                        <div class="heatmap-overlay"></div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Metrics -->
+                <div class="metrics-column">
+                    <!-- Gauge Card -->
+                    <div class="glass-card gauge-card">
+                        <div class="circular-progress">
+                            <div class="inner-circle">
+                                <div class="percentage" id="resultPercentage">98%</div>
+                                <div class="status-label" id="resultLabel">Deepfake<br>Probability</div>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="160px" height="160px">
+                                <defs>
+                                    <linearGradient id="GradientColor">
+                                        <stop offset="0%" stop-color="#e91e63" />
+                                        <stop offset="100%" stop-color="#673ab7" />
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="80" cy="80" r="70" stroke-linecap="round" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Breakdown Card -->
+                    <div class="glass-card breakdown-card">
+                        <h3>Breakdown</h3>
+                        <div class="breakdown-item">
+                            <span>Facial Manipulation:</span>
+                            <span class="bad-status">High Confidence</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Lighting Inconsistency:</span>
+                            <span class="warn-status">Detected</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Source Attribution:</span>
+                            <span class="neutral-status">Unknown</span>
+                        </div>
+                    </div>
+
+                    <!-- Key Frames Card -->
+                    <div class="glass-card keyframes-card">
+                        <h3>Key Frames</h3>
+                        <div class="frames-row">
+                            <div class="frame-thumb"><i class="fa-solid fa-play"></i></div>
+                            <div class="frame-thumb"><i class="fa-solid fa-play"></i></div>
+                            <div class="frame-thumb"><i class="fa-solid fa-play"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn-gradient large-btn">Download Full Report</button>
+                <a href="/" class="btn-outline large-btn">New Analysis</a>
+            </div>
+
+        </main>
+
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Us</a>
+            </div>
+            <div class="footer-social">
+                <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-github"></i></a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Script to populate data -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Retrieve data from sessionStorage
+            const resultData = JSON.parse(sessionStorage.getItem('analysisResult'));
+            const imageData = sessionStorage.getItem('analysisImage');
+            const fileName = sessionStorage.getItem('analysisFilename');
+
+            if (resultData && imageData) {
+                // Update Image
+                document.getElementById('resultImage').src = imageData;
+                document.getElementById('resultFilename').textContent = fileName || 'Unknown File';
+
+                // Update Percentage
+                const percentage = Math.round(resultData.confidence);
+                document.getElementById('resultPercentage').textContent = percentage + '%';
+
+                // Update Label
+                const label = resultData.class === 'Fake' ? 'Deepfake' : 'Genuine';
+                document.getElementById('resultLabel').innerHTML = `${label}<br>Probability`;
+
+                // Update Progress Circle (approximate logic for stroke-dashoffset)
+                // 440 is roughly the circumference of radius 70 (2 * pi * 70 = 439.8)
+                const circle = document.querySelector('circle');
+                const offset = 440 - (440 * percentage) / 100;
+                circle.style.strokeDashoffset = offset;
+
+                // Color logic
+                if (resultData.class === 'Real') {
+                    circle.style.stroke = 'var(--success-green)';
+                    document.getElementById('resultLabel').style.color = 'var(--success-green)';
+                } else {
+                    circle.style.stroke = '#e74c3c'; // Red
+                }
+
+            } else {
+                // No data found - redirect back
+                // window.location.href = '/'; 
+                // Commented out for dev/testing so I can view the layout even without data
+                console.warn('No analysis data found in storage');
+            }
+        });
+    </script>
+</body>
+
+</html>
