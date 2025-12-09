@@ -20,7 +20,7 @@ app = Flask(__name__,
 # Configuration
 # Uploads handled in frontend static
 UPLOAD_FOLDER = '../frontend/static/uploads' 
-MODEL_PATH = '../model/checkpoints/best_model.keras'
+MODEL_PATH = '../model/checkpoints/final_model.keras'
 IMG_WIDTH = 150
 IMG_HEIGHT = 150
 

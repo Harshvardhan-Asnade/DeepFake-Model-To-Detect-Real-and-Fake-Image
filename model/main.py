@@ -56,7 +56,8 @@ def main(args):
             train_gen,
             val_gen,
             epochs=args.epochs,
-            checkpoint_dir=args.checkpoint_dir
+            checkpoint_dir=args.checkpoint_dir,
+            model_name=args.model_name
         )
         
         # Plot training history
@@ -86,7 +87,7 @@ def main(args):
     
     # Save final model
     if args.save_model:
-        final_model_path = os.path.join(args.checkpoint_dir, 'final_model.keras')
+        final_model_path = os.path.join(args.checkpoint_dir, args.model_name)
         model.save(final_model_path)
         print(f"\nFinal model saved to: {final_model_path}")
     
@@ -117,6 +118,7 @@ if __name__ == "__main__":
     parser.add_argument('--skip-evaluation', action='store_true', help='Skip evaluation')
     parser.add_argument('--load-model', type=str, default=None, help='Path to load existing model')
     parser.add_argument('--save-model', action='store_true', default=True, help='Save final model')
+    parser.add_argument('--model-name', type=str, default='final_model.keras', help='Name of the model file to save')
     
     args = parser.parse_args()
     

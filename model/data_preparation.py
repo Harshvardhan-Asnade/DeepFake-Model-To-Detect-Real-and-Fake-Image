@@ -16,6 +16,9 @@ def get_dataset_path():
     
     # Alternative local path
     local_path = os.path.join(os.getcwd(), "Dataset")
+
+    # User provided path
+    user_path = "C:\\Dataset"
     
     # Check if dataset exists in default location
     if os.path.exists(default_path):
@@ -25,6 +28,10 @@ def get_dataset_path():
     elif os.path.exists(local_path):
         print(f"Using dataset from: {local_path}")
         return local_path
+    # Check if dataset exists in user provided location
+    elif os.path.exists(user_path):
+        print(f"Using dataset from: {user_path}")
+        return user_path
     else:
         error_msg = f"""
 Dataset not found! Please ensure the dataset exists in one of these locations:

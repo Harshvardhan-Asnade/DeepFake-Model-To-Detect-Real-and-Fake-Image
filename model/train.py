@@ -8,12 +8,13 @@ from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLRO
 from datetime import datetime
 import matplotlib.pyplot as plt
 
-def create_callbacks(checkpoint_dir='checkpoints'):
+def create_callbacks(checkpoint_dir='checkpoints', model_name='final_model.keras'):
     """
     Create training callbacks for model checkpointing and early stopping
     
     Args:
         checkpoint_dir: Directory to save model checkpoints
+        model_name: Name of the model file
         
     Returns:
         List of callback objects
@@ -22,7 +23,7 @@ def create_callbacks(checkpoint_dir='checkpoints'):
     os.makedirs(checkpoint_dir, exist_ok=True)
     
     # Model checkpoint - save best model
-    checkpoint_path = os.path.join(checkpoint_dir, 'best_model.keras')
+    checkpoint_path = os.path.join(checkpoint_dir, model_name)
     checkpoint = ModelCheckpoint(
         checkpoint_path,
         monitor='val_accuracy',
@@ -57,7 +58,7 @@ def create_callbacks(checkpoint_dir='checkpoints'):
     
     return [checkpoint, early_stopping, reduce_lr, tensorboard]
 
-def train_model(model, train_generator, validation_generator, epochs=50, checkpoint_dir='checkpoints'):
+def train_model(model, train_generator, validation_generator, epochs=50, checkpoint_dir='checkpoints', model_name='final_model.keras'):
     """
     Train the model
     
@@ -67,11 +68,12 @@ def train_model(model, train_generator, validation_generator, epochs=50, checkpo
         validation_generator: Validation data generator
         epochs: Number of training epochs
         checkpoint_dir: Directory to save checkpoints
+        model_name: Name of the model file to save
         
     Returns:
         Training history
     """
-    callbacks = create_callbacks(checkpoint_dir)
+    callbacks = create_callbacks(checkpoint_dir, model_name)
     
     print("\n" + "="*50)
     print("Starting Model Training")

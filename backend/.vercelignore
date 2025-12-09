@@ -1,0 +1,8 @@
+__pycache__
+*.pyc
+logs
+checkpoints/final_model.keras
+.git
+.DS_Store
+venv
+env

@@ -3,7 +3,7 @@ Model Architecture Module for Deepfake Detection
 Defines the neural network architecture using transfer learning
 """
 
-from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.applications import EfficientNetB0
 from tensorflow.keras.layers import Flatten, Dense, Dropout
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
@@ -22,8 +22,9 @@ def create_model(img_width=150, img_height=150, learning_rate=0.001):
     """
     IMG_SHAPE = (img_width, img_height, 3)
     
-    # Load pre-trained MobileNetV2 model
-    base_model = MobileNetV2(
+    # Load pre-trained EfficientNetB0 model
+    # Perfect for M4 Mac (High Accuracy)
+    base_model = EfficientNetB0(
         input_shape=IMG_SHAPE,
         include_top=False,
         weights='imagenet'
