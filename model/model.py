@@ -4,13 +4,13 @@ Defines the neural network architecture using transfer learning
 """
 
 from tensorflow.keras.applications import EfficientNetB0
-from tensorflow.keras.layers import Flatten, Dense, Dropout
+from tensorflow.keras.layers import Flatten, Dense, Dropout, Input, GlobalAveragePooling2D, BatchNormalization
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 
 def create_model(img_width=150, img_height=150, learning_rate=0.001):
     """
-    Create a deepfake detection model using MobileNetV2 as base
+    Create a deepfake detection model using EfficientNetB0 as base
     
     Args:
         img_width: Width of input images
@@ -23,7 +23,7 @@ def create_model(img_width=150, img_height=150, learning_rate=0.001):
     IMG_SHAPE = (img_width, img_height, 3)
     
     # Load pre-trained EfficientNetB0 model
-    # Perfect for M4 Mac (High Accuracy)
+    # Upgraded to EfficientNetB0 for >95% accuracy goal
     base_model = EfficientNetB0(
         input_shape=IMG_SHAPE,
         include_top=False,
@@ -35,9 +35,10 @@ def create_model(img_width=150, img_height=150, learning_rate=0.001):
     
     # Build the custom classification head
     x = base_model.output
-    x = Flatten()(x)
-    x = Dense(128, activation='relu')(x)
-    x = Dropout(0.5)(x)  # Adding dropout for regularization
+    x = GlobalAveragePooling2D()(x)
+    x = Dense(512, activation='relu')(x)
+    x = BatchNormalization()(x)
+    x = Dropout(0.5)(x)
     output_layer = Dense(1, activation='sigmoid')(x)
     
     # Combine the pre-trained base and the custom classification head
@@ -69,16 +70,28 @@ def unfreeze_base_model(model, num_layers_to_unfreeze=20):
     Returns:
         Modified model with unfrozen layers
     """
-    # Get the base model (first layer)
-    base_model = model.layers[0]
+    # We are using Functional API, so model.layers contains all layers flattened
     
-    # Unfreeze the last few layers
-    base_model.trainable = True
+    # 1. Unfreeze all layers initially (so we can selectively freeze) 
+    # OR better: Traverse and set.
     
-    # Freeze all layers except the last few
-    for layer in base_model.layers[:-num_layers_to_unfreeze]:
-        layer.trainable = False
+    print(f"Unfreezing last {num_layers_to_unfreeze} layers for fine-tuning...")
     
+    # Check total layers
+    total_layers = len(model.layers)
+    freeze_until = total_layers - num_layers_to_unfreeze
+    
+    for i, layer in enumerate(model.layers):
+        if i < freeze_until:
+            layer.trainable = False
+        else:
+            # Important: Keep BatchNormalization layers frozen during fine-tuning
+            # to prevent destroying the learned statistics
+            if 'batch_normalization' in layer.name or 'bn' in layer.name:
+                layer.trainable = False
+            else:
+                layer.trainable = True
+                
     # Recompile the model with a lower learning rate
     model.compile(
         optimizer=Adam(learning_rate=0.0001),  # Lower learning rate for fine-tuning
@@ -86,7 +99,7 @@ def unfreeze_base_model(model, num_layers_to_unfreeze=20):
         metrics=['accuracy']
     )
     
-    print(f"\nUnfroze last {num_layers_to_unfreeze} layers for fine-tuning")
+    print(f"\nModel recompiled. Last {num_layers_to_unfreeze} layers (excluding BN) are trainable.")
     
     return model
 

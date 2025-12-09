@@ -11,17 +11,24 @@ def get_dataset_path():
     Get the path to the offline dataset.
     Checks common locations and returns the path if found.
     """
+    # Mac M4 dataset location (primary)
+    mac_dataset_path = "/Users/harshvardhan/Developer/deepfake/Dataset/Image Dataset"
+    
     # Default cached dataset location
     default_path = os.path.expanduser("~/.cache/deepfake-dataset/Dataset")
     
     # Alternative local path
     local_path = os.path.join(os.getcwd(), "Dataset")
 
-    # User provided path
+    # User provided path (Windows)
     user_path = "C:\\Dataset"
     
+    # Check if dataset exists in Mac location (first priority)
+    if os.path.exists(mac_dataset_path):
+        print(f"Using dataset from: {mac_dataset_path}")
+        return mac_dataset_path
     # Check if dataset exists in default location
-    if os.path.exists(default_path):
+    elif os.path.exists(default_path):
         print(f"Using dataset from: {default_path}")
         return default_path
     # Check if dataset exists in local directory
@@ -35,8 +42,9 @@ def get_dataset_path():
     else:
         error_msg = f"""
 Dataset not found! Please ensure the dataset exists in one of these locations:
-1. {default_path}
-2. {local_path}
+1. {mac_dataset_path} (Mac M4)
+2. {default_path}
+3. {local_path}
 
 The dataset should have the following structure:
 Dataset/
@@ -80,9 +88,12 @@ def create_data_generators(dataset_path, img_width=150, img_height=150, batch_si
     """
     Create data generators for training, validation, and testing
     """
+    from tensorflow.keras.applications.efficientnet import preprocess_input
+
     # Data augmentation for training set
+    # Using EfficientNet preprocessing
     train_datagen = ImageDataGenerator(
-        rescale=1./255,
+        preprocessing_function=preprocess_input,
         rotation_range=20,
         width_shift_range=0.2,
         height_shift_range=0.2,
@@ -93,8 +104,10 @@ def create_data_generators(dataset_path, img_width=150, img_height=150, batch_si
         fill_mode='nearest'
     )
     
-    # Only rescaling for validation and test sets (no augmentation)
-    validation_test_datagen = ImageDataGenerator(rescale=1./255)
+    # Preprocessing only for validation and test sets
+    validation_test_datagen = ImageDataGenerator(
+        preprocessing_function=preprocess_input
+    )
     
     # Construct full paths to the data directories
     train_data_dir = os.path.join(dataset_path, 'Train')

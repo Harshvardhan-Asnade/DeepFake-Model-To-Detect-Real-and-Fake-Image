@@ -20,7 +20,7 @@ app = Flask(__name__,
 # Configuration
 # Uploads handled in frontend static
 UPLOAD_FOLDER = '../frontend/static/uploads' 
-MODEL_PATH = '../model/checkpoints/final_model.keras'
+MODEL_PATH = '../model/checkpoints/final_model_pro.keras'
 IMG_WIDTH = 150
 IMG_HEIGHT = 150
 
@@ -57,8 +57,8 @@ def preprocess_image(img):
     # Expand dimensions to match batch size
     img_array = np.expand_dims(img_array, axis=0)
     
-    # Normalize pixel values
-    img_array = img_array / 255.0
+    # Use EfficientNet preprocessing (expects 0-255 inputs)
+    img_array = tf.keras.applications.efficientnet.preprocess_input(img_array)
     
     return img_array
 
@@ -204,7 +204,7 @@ if __name__ == '__main__':
     print("="*50)
     
     print("\nStarting web server...")
-    print("Open your browser and navigate to: http://localhost:5000")
+    print("Open your browser and navigate to: http://localhost:5001")
     print("="*50 + "\n")
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5001)
