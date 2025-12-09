@@ -19,10 +19,10 @@ Run **Step 2** (20 epochs). It's the perfect balance of speed and accuracy.
 
 ## 🚀 How to Run Commands
 
-1. Open your terminal (Command Prompt or PowerShell).
+1. Open your terminal.
 2. Navigate to the model directory:
    ```bash
-   cd c:\Deepfake\model
+   cd model
    ```
 3. Copy and paste one of the commands below.
 
@@ -41,6 +41,20 @@ python main.py --epochs 5 --load-model checkpoints/final_model.keras
 ```
 - Loads your existing `final_model.keras`.
 - Trains it for 5 more rounds.
+
+### 3. Advanced Configuration
+For users who want more control over the training process:
+
+| Argument | Default | Description |
+| :--- | :--- | :--- |
+| `--batch-size` | `32` | Number of images per training step. Reduce if running out of memory. |
+| `--img-width`, `--img-height` | `150` | Resolution of input images. Higher = more detail but slower. |
+| `--learning-rate` | `0.001` | How fast the model learns. Lower is more stable but slower. |
+
+**Example High-Quality Training:**
+```bash
+python main.py --epochs 20 --batch-size 16 --img-width 224 --img-height 224
+```
 
 ---
 

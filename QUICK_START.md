@@ -1,35 +1,31 @@
 # 🚀 Quick Start Guide - DeepGuard Web Application
 
-## Option 1: Using the Batch Script (Easiest)
-
-Simply double-click the `start_webapp.bat` file in Windows Explorer!
-
-This will:
-1. Check if the model exists
-2. Start the Flask web server
-3. Show you the URL to open in your browser
-
-## Option 2: Manual Start
+## Option 1: Using the Terminal (Recommended)
 
 ### Step 1: Ensure Model is Trained
 
 Your model is currently training. Once it completes:
-- The trained model will be saved to: `checkpoints/best_model.keras`
+- The trained model will be saved to: `model/checkpoints/final_model_pro.keras`
 
 If you want to train manually or re-train:
+
 ```bash
+cd model
 python main.py --epochs 10 --batch-size 32
+cd ..
 ```
 
 ### Step 2: Run the Web Application
 
-Open a terminal in the `c:\Deepfake` directory and run:
+Open a terminal in the project directory and run:
 
 ```bash
+cd backend
 python app.py
 ```
 
 You should see:
+
 ```
 ==================================================
 Deepfake Detection Web Application
@@ -38,13 +34,13 @@ Deepfake Detection Web Application
 ✓ Model loaded successfully!
 
 Starting web server...
-Open your browser and navigate to: http://localhost:5000
+Open your browser and navigate to: http://localhost:5001
 ==================================================
 ```
 
 ### Step 3: Open in Browser
 
-Navigate to: **http://localhost:5000**
+Navigate to: **http://localhost:5001**
 
 ## 🎯 How to Use the Web App
 
@@ -116,15 +112,15 @@ Click "Analyze Another Image" to start over!
 
 If you see this in the top-right corner:
 1. Wait for your current training to complete
-2. Or run: `python main.py --epochs 10 --batch-size 32`
-3. Restart the web app
+2. Or run the training command in Step 1.
+3. Restart the web app.
 
 ### Cannot Connect to Server
 
 Make sure:
 - The Flask app is running (you should see console output)
-- You're navigating to `http://localhost:5000`
-- No other application is using port 5000
+- You're navigating to `http://localhost:5001`
+- No other application is using port 5001
 
 ### Upload Not Working
 
@@ -149,4 +145,4 @@ Try uploading different images and see how the model performs. The interface pro
 
 ---
 
-**Need help?** Check the full `WEB_APP_README.md` for detailed documentation.
+**Need help?** Check `README.md` for more details.
