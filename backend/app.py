@@ -4,6 +4,7 @@ Provides a web interface to upload images and get predictions
 """
 
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
@@ -16,6 +17,9 @@ import base64
 app = Flask(__name__, 
             template_folder='../frontend/templates',
             static_folder='../frontend/static')
+
+# Enable CORS for browser extension
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Configuration
 # Uploads handled in frontend static
