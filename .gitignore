@@ -1,44 +1,5 @@
-# Python
 venv/
-env/
-ENV/
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.ipynb_checkpoints/
-
-# OS
 .DS_Store
-Thumbs.db
-desktop.ini
-
-# Project Specific
 model/logs/
 frontend/static/uploads/
-*.log
-*.db
-*.sqlite
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Temporary
-*.tmp
-*.bak
-
