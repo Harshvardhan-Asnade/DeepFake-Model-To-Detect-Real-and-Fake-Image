@@ -203,8 +203,14 @@ if __name__ == '__main__':
     print("Deepfake Detection Web Application")
     print("="*50)
     
-    print("\nStarting web server...")
-    print("Open your browser and navigate to: http://localhost:5001")
+    # Get port from environment variable (default 5001), crucial for deployment (e.g. HF Spaces uses 7860)
+    port = int(os.environ.get('PORT', 5001))
+    
+    # Disable debug mode in production
+    debug_mode = os.environ.get('FLASK_ENV') == 'development'
+
+    print(f"Starting web server on port {port}...")
+    print(f"Open your browser and navigate to: http://localhost:{port}")
     print("="*50 + "\n")
     
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=debug_mode, host='0.0.0.0', port=port)
