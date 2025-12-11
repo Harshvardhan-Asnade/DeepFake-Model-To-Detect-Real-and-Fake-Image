@@ -412,6 +412,7 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
 /* Additions for Results Page */
 
 .results-content {
@@ -628,6 +629,7 @@ body {
         transform: translateY(0);
     }
 }
+
 /* ==================== Dashboard Styles ==================== */
 
 .dashboard-grid-layout {
@@ -1074,6 +1076,7 @@ body {
     color: var(--text-muted);
     padding: 0 5px;
 }
+
 /* ==================== React Dashboard Replica Styles ==================== */
 
 /* Base Colors from React Code */
