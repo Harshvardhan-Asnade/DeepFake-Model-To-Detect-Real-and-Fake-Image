@@ -3,58 +3,56 @@
 This guide will show you how to deploy your Deepfake Detection model for free using **Hugging Face Spaces**.
 
 ## Prerequisites
-- A GitHub account (optional, but recommended)
-- The code on your local machine
+- You have already pushed your code to GitHub (✅ Done!)
+- A Hugging Face account ([Sign Up](https://huggingface.co/join))
 
-## Step 1: Create a Hugging Face Account
-1. Go to [huggingface.co](https://huggingface.co/)
-2. Click **Sign Up** and create a free account.
-
-## Step 2: Create a New Space
-1. Click on your profile picture in the top right and select **New Space**.
+## Step 1: Create a New Space
+1. Go to [huggingface.co/new-space](https://huggingface.co/new-space).
 2. **Space Name**: Enter a name (e.g., `deepfake-detector`).
 3. **License**: Select `MIT` or `Apache 2.0`.
-4. **SDK**: Select **Docker** (This is important! Do not select Streamlit or Gradio).
+4. **SDK**: Select **Docker** (Crucial!).
 5. **Space Hardware**: Keep it as **CPU Basic (Free)**.
 6. **Visibility**: Public.
 7. Click **Create Space**.
 
-## Step 3: Upload Your Code
-You can upload your code in two ways. The easiest way for beginners is using the web interface or Git from your terminal.
+## Step 2: Deploy from your Terminal
+Since you already have your code set up locally, we just need to tell Git to send a copy to Hugging Face.
 
-### Option A: Using the Web Interface (Easiest)
-1. On your new Space page, click the **Files** tab.
-2. Click **Add file** -> **Upload files**.
-3. Drag and drop **ALL** the files and folders from your project folder into the browser.
-   - Make sure you include: `backend/`, `frontend/`, `model/`, `Dockerfile`, `requirements.txt`.
-   - **Note**: You might need to upload the `model/checkpoints/final_model_pro.keras` file separately if it's very large, or use Git LFS (Option B).
-4. Click **Commit changes to main**.
-5. Hugging Face will automatically start building your app. Click the **App** tab to see the build logs.
-
-### Option B: Using Git (Recommended)
-If you have `git` installed:
-
-1. Clone your Space locally (replace `YOUR_USERNAME` and `SPACE_NAME`):
+1. **Add Hugging Face as a remote** (replace `YOUR_USERNAME` and `SPACE_NAME`):
    ```bash
-   git clone https://huggingface.co/spaces/YOUR_USERNAME/SPACE_NAME
+   git remote add space https://huggingface.co/spaces/YOUR_USERNAME/SPACE_NAME
    ```
-2. Copy all your project files into this new folder.
-3. Install Git LFS (for large model files):
+
+2. **Force Push to Deploy**:
    ```bash
-   git lfs install
-   git lfs track "*.keras"
+   git push --force space main
    ```
-4. Push to Hugging Face:
+   _Note: You might be asked for your Hugging Face `Username` and `Access Token` (password). You can get a token from your [Settings](https://huggingface.co/settings/tokens)._
+
+## 🔄 How to Update
+When you make changes to your code (e.g., updating the model or fixing a bug), run these commands:
+
+1. **Save your changes**:
    ```bash
    git add .
-   git commit -m "Initial commit"
-   git push
+   git commit -m "Describe your changes here"
    ```
 
-## Step 4: Troubleshooting
-- **Build Errors**: Check the **Logs** tab in your Space.
-- **Port Issues**: We configured the `Dockerfile` to expose port `7860`, which is what Hugging Face expects.
-- **Model Loading**: Ensure your `final_model_pro.keras` was uploaded correctly. If it's missing, the app will warn you in the logs.
+2. **Push to GitHub** (Safe backup):
+   ```bash
+   git push origin main
+   ```
+
+3. **Push to Hugging Face** (Deploy update):
+   ```bash
+   git push space main
+   ```
+   _Your Space will automatically rebuild and restart with the new code!_
+
+## Step 3: Troubleshooting
+- **Build Logs**: After pushing, go to your Space URL. Click the **App** tab to see it building.
+- **Port 7860**: We configured Docker to use port 7860. The logs should say `Listening on http://0.0.0.0:7860`.
+- **Large Files**: If `git push` fails due to large files, ensure you ran `git lfs install` (which you have!).
 
 ## 🏁 Success!
-Once the build finishes (it may take a few minutes), your app will be live at `https://huggingface.co/spaces/YOUR_USERNAME/SPACE_NAME`. You can share this link with anyone!
+Your app will be live at `https://huggingface.co/spaces/YOUR_USERNAME/SPACE_NAME`.
