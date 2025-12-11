@@ -11,8 +11,12 @@ def get_dataset_path():
     Get the path to the offline dataset.
     Checks common locations and returns the path if found.
     """
-    # Mac M4 dataset location (primary)
-    mac_dataset_path = "/Users/harshvardhan/Developer/deepfake/Dataset/Image Dataset"
+    # Mac M4 dataset location (primary) - REMOVED HARDCODED USER PATH
+    # mac_dataset_path = "/Users/harshvardhan/Developer/deepfake/Dataset/Image Dataset"
+    
+    # Check for dataset in current directory first
+    if os.path.exists("Dataset"):
+         return os.path.abspath("Dataset")
     
     # Default cached dataset location
     default_path = os.path.expanduser("~/.cache/deepfake-dataset/Dataset")

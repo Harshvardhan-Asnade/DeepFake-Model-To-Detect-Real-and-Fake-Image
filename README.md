@@ -44,7 +44,6 @@ Deepfake-System/
    
    # Install dependencies
    pip install -r requirements.txt
-   pip install flask pillow tensorflow
    ```
 
 2. **Dataset Setup**:
