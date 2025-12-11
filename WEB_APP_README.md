@@ -10,7 +10,7 @@ A beautiful, modern web application for detecting deepfake images using advanced
 - **🚀 Fast Detection**: Analyze images in under 1 second
 - **📊 Detailed Results**: View confidence scores, classification, and raw predictions
 - **📱 Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
-- **🎯 High Accuracy**: 95%+ accuracy using MobileNetV2 architecture
+- **🎯 High Accuracy**: ~91.6% accuracy using EfficientNetB0 architecture
 - **🔄 Drag & Drop**: Easy image upload with drag-and-drop support
 
 ## 🛠️ Technology Stack
@@ -18,7 +18,7 @@ A beautiful, modern web application for detecting deepfake images using advanced
 ### Backend
 - **Flask**: Web framework
 - **TensorFlow**: Deep learning framework
-- **MobileNetV2**: Pre-trained model for transfer learning
+- **EfficientNetB0**: Pre-trained model for transfer learning
 - **Pillow**: Image processing
 
 ### Frontend
@@ -30,8 +30,8 @@ A beautiful, modern web application for detecting deepfake images using advanced
 ## 📋 Prerequisites
 
 1. **Python 3.8+** installed
-2. **Trained model** at `checkpoints/best_model.keras`
-   - If you haven't trained the model yet, run: `python main.py --epochs 10`
+2. **Trained model** at `model/checkpoints/final_model_pro.keras`
+   - If you haven't trained the model yet, run: `python model/main.py --epochs 10`
 
 ## 🚀 Quick Start
 
@@ -44,23 +44,26 @@ pip install -r requirements.txt
 ### 2. Train the Model (if not already done)
 
 ```bash
+cd model
 python main.py --epochs 10 --batch-size 32
+cd ..
 ```
 
 This will:
 - Load the offline deepfake dataset
-- Train the MobileNetV2-based model
-- Save the best model to `checkpoints/best_model.keras`
+- Train the EfficientNetB0-based model
+- Save the best model to `model/checkpoints/final_model_pro.keras`
 
 ### 3. Run the Web Application
 
 ```bash
+cd backend
 python app.py
 ```
 
 ### 4. Open in Browser
 
-Navigate to: **http://localhost:5000**
+Navigate to: **http://localhost:5001**
 
 ## 📖 Usage Guide
 
@@ -107,43 +110,45 @@ Navigate to: **http://localhost:5000**
 
 ```
 Deepfake/
-├── app.py                    # Flask application (backend)
-├── templates/
-│   └── index.html           # Main HTML template
-├── static/
-│   ├── style.css            # Comprehensive styling
-│   └── script.js            # Frontend JavaScript
-├── checkpoints/
-│   └── best_model.keras     # Trained model (created after training)
-├── model.py                 # Model architecture
-├── train.py                 # Training utilities
-├── evaluate.py              # Evaluation functions
-├── data_preparation.py      # Dataset handling
-├── main.py                  # Training pipeline
+├── backend/
+│   └── app.py               # Flask application (Port 5001)
+├── frontend/
+│   ├── templates/
+│   │   └── index.html       # Main HTML template
+│   └── static/
+│       ├── style.css        # Comprehensive styling
+│       └── script.js        # Frontend JavaScript
+├── model/
+│   ├── checkpoints/
+│   │   └── final_model_pro.keras # Trained model
+│   ├── model.py             # EfficientNetB0 architecture
+│   ├── train.py             # Training utilities
+│   ├── evaluate.py          # Evaluation functions
+│   ├── data_preparation.py  # Dataset handling
+│   └── main.py              # Training pipeline
 ├── requirements.txt         # Python dependencies
-└── README.md               # Documentation
+└── README.md                # Documentation
 ```
 
 ## 🔧 Configuration
 
-### Flask Settings (app.py)
+### Flask Settings (backend/app.py)
 
 ```python
-MODEL_PATH = 'checkpoints/best_model.keras'  # Path to trained model
-IMG_WIDTH = 150                               # Input image width
-IMG_HEIGHT = 150                              # Input image height
-UPLOAD_FOLDER = 'uploads'                     # Upload directory
+MODEL_PATH = '../model/checkpoints/final_model_pro.keras'  # Path to trained model
+IMG_WIDTH = 150                                            # Input image width
+IMG_HEIGHT = 150                                           # Input image height
 ```
 
 ### Server Settings
 
 ```python
-app.run(debug=True, host='0.0.0.0', port=5000)
+app.run(debug=True, host='0.0.0.0', port=5001)
 ```
 
 - **debug=True**: Enable debug mode (disable in production)
 - **host='0.0.0.0'**: Listen on all network interfaces
-- **port=5000**: Server port
+- **port=5001**: Server port
 
 ## 🧪 API Endpoints
 
@@ -174,7 +179,7 @@ app.run(debug=True, host='0.0.0.0', port=5000)
 ```json
 {
   "loaded": true,
-  "model_path": "checkpoints/best_model.keras",
+  "model_path": "../model/checkpoints/final_model_pro.keras",
   "exists": true
 }
 ```
@@ -187,16 +192,17 @@ app.run(debug=True, host='0.0.0.0', port=5000)
 
 **Solution**: 
 ```bash
+cd model
 python main.py --epochs 10 --batch-size 32
 ```
 
 ### Port Already in Use
 
-**Problem**: Port 5000 is already occupied
+**Problem**: Port 5001 is already occupied
 
-**Solution**: Change the port in `app.py`:
+**Solution**: Change the port in `backend/app.py`:
 ```python
-app.run(debug=True, host='0.0.0.0', port=5001)
+app.run(debug=True, host='0.0.0.0', port=5002)
 ```
 
 ### Image Upload Fails
@@ -212,7 +218,7 @@ app.run(debug=True, host='0.0.0.0', port=5001)
 
 **Problem**: Takes long time to load model
 
-**Solution**: This is normal on first load. The model is ~10MB and needs to be loaded into memory.
+**Solution**: This is normal on first load. The model is ~10-20MB and needs to be loaded into memory.
 
 ## 🎯 Performance Optimization
 
@@ -220,25 +226,21 @@ app.run(debug=True, host='0.0.0.0', port=5001)
 
 1. **Disable Debug Mode**:
    ```python
-   app.run(debug=False, host='0.0.0.0', port=5000)
+   app.run(debug=False, host='0.0.0.0', port=5001)
    ```
 
 2. **Use Production WSGI Server**:
    ```bash
    pip install gunicorn
-   gunicorn -w 4 -b 0.0.0.0:5000 app:app
+   cd backend
+   gunicorn -w 4 -b 0.0.0.0:5001 app:app
    ```
-
-3. **Enable Caching**: Add Flask-Caching for repeated requests
-
-4. **Optimize Model**: Use TensorFlow Lite for faster inference
 
 ## 📊 Model Information
 
-- **Architecture**: MobileNetV2 (Transfer Learning)
+- **Architecture**: EfficientNetB0 (Transfer Learning)
 - **Input Size**: 150x150x3 RGB images
-- **Training Dataset**: 150,000+ images (Fake and Real)
-- **Accuracy**: 95%+ on test set
+- **Accuracy**: ~91.6% (Pro Version)
 - **Inference Time**: < 1 second per image
 
 ## 🔒 Security Considerations

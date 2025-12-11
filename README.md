@@ -17,12 +17,12 @@ A high-performance deep learning system to detect deepfake images, featuring a *
   - **Training Pipeline**: Comprehensive scripts for Data Prep, Training, and Evaluation.
   - **Inference Engine**: Fast Flask-based API running on Port 5001.
 
-## � Documentation
+## 📚 Documentation
 
 - [**Structure**](STRUCTURE.md): Detailed breakdown of files and folders.
 - [**Technologies**](TECHNOLOGIES.md): Explanation of the tech stack and AI terms used.
 
-## �📂 Project Structure
+## 📂 Project Structure
 
 See [STRUCTURE.md](STRUCTURE.md) for a detailed breakdown.
 
