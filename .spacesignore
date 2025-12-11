@@ -1,7 +1,5 @@
 # Python
 venv/
-env/
-ENV/
 __pycache__/
 *.pyc
 *.pyo
@@ -19,26 +17,23 @@ build/
 *.swp
 *.swo
 *~
-.ipynb_checkpoints/
 
 # OS
 .DS_Store
 Thumbs.db
-desktop.ini
 
-# Project Specific
-model/logs/
-frontend/static/uploads/
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Logs
 *.log
-*.db
-*.sqlite
 
 # Environment
 .env
 .env.local
-.env.*.local
 
-# Temporary
+# Temporary files
 *.tmp
 *.bak
-

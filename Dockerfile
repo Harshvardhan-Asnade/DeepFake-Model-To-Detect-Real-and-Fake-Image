@@ -1,34 +1,38 @@
-# Use an official Python runtime as a parent image
+# Use official Python runtime as base image
 FROM python:3.9-slim
 
-# Set the working directory to /code
-WORKDIR /code
+# Set working directory in container
+WORKDIR /app
 
-# Copy the requirements file into the container at /code
-COPY requirements.txt /code/
+# Install system dependencies required for OpenCV and TensorFlow
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install any needed packages specified in requirements.txt
-# Update pip first
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Copy requirements file
+COPY requirements.txt .
 
-# Copy the current directory contents into the container at /code
-COPY . /code/
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Create necessary directories for uploads if they don't exist
-# Matches the UPLOAD_FOLDER path in app.py: '../frontend/static/uploads'
-# Since we will run from /code/backend, relative path ../frontend/static/uploads resolves to /code/frontend/static/uploads
-RUN mkdir -p frontend/static/uploads
+# Copy the entire application to container
+COPY . .
 
-# Grant write permissions to the uploads directory (important for non-root users in some environments)
-RUN chmod 777 frontend/static/uploads
-
-# Change working directory to backend because app.py relies on relative paths like '../model'
-WORKDIR /code/backend
-
-# Make port 7860 available to the world outside this container (Standard for HF Spaces)
+# Expose port 7860 (Hugging Face Spaces default port)
 EXPOSE 7860
 
-# Run app.py when the container launches
-# Host 0.0.0.0 is crucial for Docker
-CMD ["python", "app.py"]
+# Set environment variables
+ENV FLASK_APP=backend/app.py
+ENV PORT=7860
+ENV PYTHONUNBUFFERED=1
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:7860')"
+
+# Run the Flask application
+CMD ["python", "backend/app.py"]

@@ -199,18 +199,17 @@ else:
     print(f"Expected model path: {MODEL_PATH}")
 
 if __name__ == '__main__':
+    # Get port from environment variable (for Hugging Face) or use 5001 for local
+    port = int(os.environ.get('PORT', 5001))
+    
     print("\n" + "="*50)
     print("Deepfake Detection Web Application")
     print("="*50)
     
-    # Get port from environment variable (default 5001), crucial for deployment (e.g. HF Spaces uses 7860)
-    port = int(os.environ.get('PORT', 5001))
-    
-    # Disable debug mode in production
-    debug_mode = os.environ.get('FLASK_ENV') == 'development'
-
-    print(f"Starting web server on port {port}...")
+    print(f"\nStarting web server on port {port}...")
     print(f"Open your browser and navigate to: http://localhost:{port}")
     print("="*50 + "\n")
     
+    # Use debug=False for production (Hugging Face)
+    debug_mode = os.environ.get('FLASK_ENV') != 'production'
     app.run(debug=debug_mode, host='0.0.0.0', port=port)
