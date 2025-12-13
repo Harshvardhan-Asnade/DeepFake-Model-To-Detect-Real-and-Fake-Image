@@ -78,3 +78,52 @@ Look for the `val_accuracy` number in the output. If it goes UP, your model is g
 
 **How to stop training?**
 Press `Ctrl + C` in the terminal. The model saves the best version automatically during training.
+
+---
+
+## 📂 How to Train on Your Own Dataset
+
+If you want to train the model on a completely new dataset (e.g., typical Kaggle structure), follow these steps:
+
+### 1. Prepare Your Data
+You can organize your images in one of two ways:
+
+**Option A (Standard Split - Best for Control):**
+```
+Dataset/
+├── Train/
+│   ├── Fake/
+│   └── Real/
+├── Validation/
+│   ├── Fake/
+│   └── Real/
+└── Test/
+    ├── Fake/
+    └── Real/
+```
+
+**Option B (Simple - Easy):**
+Just dump your images into two folders. The code will automatically split them (80% train, 20% validation).
+```
+Dataset/
+├── Fake/
+└── Real/
+```
+
+### 2. Place the Dataset
+The code now automatically checks this location first:
+1. `~/Developer/Deepfake-Model-To-Detect-Real-and-Fake-Image/NewDataset`
+
+If not found there, it checks:
+2. Inside the `model` folder.
+3. `~/Developer/deepfake/Dataset/Image Dataset`
+4. `~/.cache/deepfake-dataset/Dataset`
+
+
+### 3. Run Training
+Once your data is in place, run the standard training command:
+```bash
+python main.py --epochs 20
+```
+The script will key off your new `Dataset` folder automatically.
+

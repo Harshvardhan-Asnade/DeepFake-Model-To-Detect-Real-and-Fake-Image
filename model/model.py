@@ -8,23 +8,52 @@ from tensorflow.keras.layers import Flatten, Dense, Dropout, Input, GlobalAverag
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 
-def create_model(img_width=150, img_height=150, learning_rate=0.001):
+def create_model(model_type='EfficientNetB0', img_width=None, img_height=None, learning_rate=0.001):
     """
-    Create a deepfake detection model using EfficientNetB0 as base
+    Create a deepfake detection model using Transfer Learning
     
     Args:
-        img_width: Width of input images
-        img_height: Height of input images
+        model_type: Type of EfficientNet model to use (e.g., 'EfficientNetB0', 'EfficientNetB4')
+        img_width: Width of input images (optional, defaults to model optimal)
+        img_height: Height of input images (optional, defaults to model optimal)
         learning_rate: Learning rate for optimizer
         
     Returns:
         Compiled Keras model
     """
+    import tensorflow as tf
+    from tensorflow.keras.applications import (
+        EfficientNetB0, EfficientNetB1, EfficientNetB2, EfficientNetB3,
+        EfficientNetB4, EfficientNetB5, EfficientNetB6, EfficientNetB7
+    )
+    
+    # Model Configurations (Optimal Resolutions)
+    model_config = {
+        'EfficientNetB0': {'model': EfficientNetB0, 'res': 224},
+        'EfficientNetB1': {'model': EfficientNetB1, 'res': 240},
+        'EfficientNetB2': {'model': EfficientNetB2, 'res': 260},
+        'EfficientNetB3': {'model': EfficientNetB3, 'res': 300},
+        'EfficientNetB4': {'model': EfficientNetB4, 'res': 380},
+        'EfficientNetB5': {'model': EfficientNetB5, 'res': 456},
+        'EfficientNetB6': {'model': EfficientNetB6, 'res': 528},
+        'EfficientNetB7': {'model': EfficientNetB7, 'res': 600},
+    }
+    
+    if model_type not in model_config:
+        raise ValueError(f"Invalid model_type. Available: {list(model_config.keys())}")
+    
+    # Set default resolution if not provided
+    if img_width is None or img_height is None:
+        default_res = model_config[model_type]['res']
+        img_width = default_res
+        img_height = default_res
+        print(f"Auto-setting resolution to {img_width}x{img_height} for {model_type}")
+
     IMG_SHAPE = (img_width, img_height, 3)
     
-    # Load pre-trained EfficientNetB0 model
-    # Upgraded to EfficientNetB0 for >95% accuracy goal
-    base_model = EfficientNetB0(
+    # Load pre-trained model
+    BaseModel = model_config[model_type]['model']
+    base_model = BaseModel(
         input_shape=IMG_SHAPE,
         include_top=False,
         weights='imagenet'
@@ -36,6 +65,7 @@ def create_model(img_width=150, img_height=150, learning_rate=0.001):
     # Build the custom classification head
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
+    x = BatchNormalization()(x)
     x = Dense(512, activation='relu')(x)
     x = BatchNormalization()(x)
     x = Dropout(0.5)(x)
@@ -45,16 +75,22 @@ def create_model(img_width=150, img_height=150, learning_rate=0.001):
     model = Model(inputs=base_model.input, outputs=output_layer)
     
     # Compile the model
+    # Compile the model
+    # Using BinaryFocalCrossentropy (gamma=2.0) to focus on hard examples
+    # This is crucial for pushing accuracy from ~90% to 99%
+    from tensorflow.keras.losses import BinaryFocalCrossentropy
+    
     model.compile(
         optimizer=Adam(learning_rate=learning_rate),
-        loss='binary_crossentropy',
+        loss=BinaryFocalCrossentropy(gamma=2.0, from_logits=False),
         metrics=['accuracy']
     )
     
     print("\n" + "="*50)
-    print("Model Architecture Summary")
+    print(f"Model: {model_type}")
+    print(f"Input Shape: {IMG_SHAPE}")
     print("="*50)
-    model.summary()
+    # model.summary() # Commented out to reduce noise, can uncommment if needed
     print("="*50 + "\n")
     
     return model
@@ -93,9 +129,13 @@ def unfreeze_base_model(model, num_layers_to_unfreeze=20):
                 layer.trainable = True
                 
     # Recompile the model with a lower learning rate
+    # Recompile the model with a lower learning rate
+    # Maintain Focal Loss during fine-tuning
+    from tensorflow.keras.losses import BinaryFocalCrossentropy
+    
     model.compile(
         optimizer=Adam(learning_rate=0.0001),  # Lower learning rate for fine-tuning
-        loss='binary_crossentropy',
+        loss=BinaryFocalCrossentropy(gamma=2.0, from_logits=False),
         metrics=['accuracy']
     )
     

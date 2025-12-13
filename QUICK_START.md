@@ -11,16 +11,18 @@ Get the Deepfake Detection System up and running in minutes.
 ## ⚡ Setup in 3 Steps
 
 ### 1. Setup Environment
-First, create a virtual environment to keep your project clean.
+First, create a virtual environment to keep your project clean. Choose your OS:
 
-```bash
-# macOS / Linux
-python3 -m venv venv
-source venv/bin/activate
-
-# Windows
+#### 🪟 Windows
+```cmd
 python -m venv venv
 venv\Scripts\activate
+```
+
+#### 🍎 macOS / 🐧 Linux
+```bash
+python3 -m venv venv
+source venv/bin/activate
 ```
 
 ### 2. Install Dependencies
@@ -33,6 +35,13 @@ pip install -r requirements.txt
 ### 3. Run the App
 Launch the web interface.
 
+#### 🪟 Windows
+```cmd
+cd backend
+python app.py
+```
+
+#### 🍎 macOS / 🐧 Linux
 ```bash
 cd backend
 python app.py

@@ -44,8 +44,14 @@
 
             <!-- Loading State -->
             <div class="loading" id="loadingState" style="display: none;">
-                <div class="spinner"></div>
-                <p>Analyzing...</p>
+                <div class="skeleton-wrapper">
+                    <div class="skeleton-image"></div>
+                    <div class="skeleton-details">
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line short"></div>
+                    </div>
+                </div>
+                <p class="loading-text">Analyzing your image...</p>
             </div>
 
             <!-- Results Section with Image -->

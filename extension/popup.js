@@ -59,9 +59,12 @@ function checkForContextMenuResult() {
 function setupEventListeners() {
     uploadZone.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', handleFileSelect);
-    uploadZone.addEventListener('dragover', handleDragOver);
-    uploadZone.addEventListener('dragleave', handleDragLeave);
-    uploadZone.addEventListener('drop', handleDrop);
+
+    // Global Drag & Drop
+    document.body.addEventListener('dragover', handleGlobalDragOver);
+    document.body.addEventListener('dragleave', handleGlobalDragLeave);
+    document.body.addEventListener('drop', handleGlobalDrop);
+
     newCheckBtn.addEventListener('click', resetToUpload);
     clearHistoryBtn.addEventListener('click', clearHistory);
 }
@@ -83,31 +86,26 @@ async function checkAPIStatus() {
 }
 
 // File Selection Handlers
-function handleFileSelect(e) {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-        selectedFile = file;
-        selectedImageUrl = URL.createObjectURL(file);
-        analyzeImage();
+// Global Drag & Drop Handlers
+function handleGlobalDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.body.classList.add('dragging');
+}
+
+function handleGlobalDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only remove if leaving the window (not just entering a child element)
+    if (e.clientX <= 0 || e.clientY <= 0 || e.clientX >= window.innerWidth || e.clientY >= window.innerHeight) {
+        document.body.classList.remove('dragging');
     }
 }
 
-function handleDragOver(e) {
+function handleGlobalDrop(e) {
     e.preventDefault();
     e.stopPropagation();
-    uploadZone.classList.add('dragover');
-}
-
-function handleDragLeave(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    uploadZone.classList.remove('dragover');
-}
-
-function handleDrop(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    uploadZone.classList.remove('dragover');
+    document.body.classList.remove('dragging');
 
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
@@ -159,6 +157,21 @@ function displayResults(prediction, imageUrl) {
     // Set image
     if (imageUrl) {
         resultImage.src = imageUrl;
+    }
+
+    const imageContainer = document.querySelector('.result-image-container');
+
+    // Visual Feedback
+    if (isReal) {
+        launchConfetti();
+        imageContainer.classList.remove('fake-warning');
+        // Green glow for real
+        imageContainer.style.boxShadow = '0 4px 20px rgba(0, 212, 170, 0.3)';
+        imageContainer.style.border = '2px solid var(--success)';
+    } else {
+        imageContainer.classList.add('fake-warning');
+        imageContainer.style.boxShadow = 'none'; // Class handles it
+        imageContainer.style.border = 'none'; // Class handles it
     }
 
     // Update badge
@@ -224,7 +237,7 @@ function loadHistory() {
         historyGrid.innerHTML = history.slice(0, 8).map(item => {
             const isReal = item.result.class === 'Real';
             return `
-        <div class="history-item" data-timestamp="${item.timestamp}">
+        <div class="history-item" data-timestamp="${item.timestamp}" title="${new Date(item.timestamp).toLocaleString()}">
           <img src="${item.imageUrl}" alt="History">
           <div class="history-item-badge ${isReal ? 'real' : 'fake'}"></div>
         </div>
@@ -249,5 +262,32 @@ function clearHistory() {
         chrome.storage.local.set({ history: [] }, () => {
             loadHistory();
         });
+    }
+}
+
+// Simple Confetti
+function launchConfetti() {
+    const colors = ['#667eea', '#00d4aa', '#ff6b6b', '#ffd166', '#ffffff'];
+
+    for (let i = 0; i < 40; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+
+        // Random properties
+        const left = Math.random() * 100;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const duration = Math.random() * 1.5 + 1.5; // 1.5-3s
+        const delay = Math.random() * 0.5;
+
+        confetti.style.left = left + '%';
+        confetti.style.backgroundColor = color;
+        confetti.style.animation = `fall ${duration}s ease-out ${delay}s forwards`;
+
+        document.body.appendChild(confetti);
+
+        // Cleanup
+        setTimeout(() => {
+            confetti.remove();
+        }, (duration + delay) * 1000);
     }
 }

@@ -24,9 +24,9 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 # Configuration
 # Uploads handled in frontend static
 UPLOAD_FOLDER = '../frontend/static/uploads' 
-MODEL_PATH = '../model/checkpoints/final_model_pro.keras'
-IMG_WIDTH = 150
-IMG_HEIGHT = 150
+MODEL_PATH = '../model/checkpoints/final_model.keras'
+IMG_WIDTH = 380
+IMG_HEIGHT = 380
 
 # Create upload folder if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)

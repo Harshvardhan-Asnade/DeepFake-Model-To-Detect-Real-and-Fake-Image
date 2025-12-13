@@ -1,10 +1,11 @@
+
 """
 Training Module for Deepfake Detection Model
 Handles model training, callbacks, and checkpointing
 """
 
 import os
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard
+from tensorflow.keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, EarlyStopping, TensorBoard
 from datetime import datetime
 import matplotlib.pyplot as plt
 
@@ -66,14 +67,47 @@ def train_model(model, train_generator, validation_generator, epochs=50, checkpo
         model: Compiled Keras model
         train_generator: Training data generator
         validation_generator: Validation data generator
-        epochs: Number of training epochs
+        epochs: Number of epochs
         checkpoint_dir: Directory to save checkpoints
         model_name: Name of the model file to save
         
     Returns:
         Training history
     """
-    callbacks = create_callbacks(checkpoint_dir, model_name)
+    # Create checkpoint directory if it doesn't exist
+    if not os.path.exists(checkpoint_dir):
+        os.makedirs(checkpoint_dir)
+        
+    checkpoint_path = os.path.join(checkpoint_dir, model_name)
+    
+    # Callbacks
+    # 1. ModelCheckpoint: Save the best model only
+    checkpoint = ModelCheckpoint(
+        checkpoint_path,
+        monitor='val_accuracy',
+        verbose=1,
+        save_best_only=True,
+        mode='max'
+    )
+    
+    # 2. ReduceLROnPlateau: Reduce learning rate when learning stops
+    reduce_lr = ReduceLROnPlateau(
+        monitor='val_loss',
+        factor=0.2,
+        patience=3,
+        min_lr=0.00001,
+        verbose=1
+    )
+    
+    # 3. EarlyStopping: Stop training if no improvement
+    early_stopping = EarlyStopping(
+        monitor='val_loss',
+        patience=10,
+        restore_best_weights=True,
+        verbose=1
+    )
+    
+    callbacks_list = [checkpoint, reduce_lr, early_stopping]
     
     print("\n" + "="*50)
     print("Starting Model Training")
@@ -82,13 +116,53 @@ def train_model(model, train_generator, validation_generator, epochs=50, checkpo
     print(f"Training samples: {train_generator.samples}")
     print(f"Validation samples: {validation_generator.samples}")
     print(f"Batch size: {train_generator.batch_size}")
+    print(f"Checkpoints will be saved to: {checkpoint_path}")
     print("="*50 + "\n")
     
+    # Calculate steps per epoch (robust to small datasets)
+    import math
+    if train_generator.samples > 0:
+        steps_per_epoch = math.ceil(train_generator.samples / train_generator.batch_size)
+    else:
+        steps_per_epoch = 1 # Fallback, though likely will error later if really 0
+        
+    # Validation config
+    if validation_generator and validation_generator.samples > 0:
+        validation_data = validation_generator
+        validation_steps = math.ceil(validation_generator.samples / validation_generator.batch_size)
+    else:
+        print("WARNING: No validation data available. Skipping validation.")
+        validation_data = None
+        validation_steps = None
+
+    # Calculate class weights for imbalanced datasets
+    from sklearn.utils import class_weight
+    import numpy as np
+    
+    class_weights = None
+    try:
+        # Check if we have classes attribute (standard flow_from_directory)
+        if hasattr(train_generator, 'classes'):
+            params_weights = class_weight.compute_class_weight(
+                class_weight='balanced',
+                classes=np.unique(train_generator.classes),
+                y=train_generator.classes
+            )
+            class_weights = dict(enumerate(params_weights))
+            print(f"\nDetected Imbalanced Dataset. Using Class Weights: {class_weights}")
+            print(f"  (0 = Fake, 1 = Real)")
+            print("-" * 50)
+    except Exception as e:
+        print(f"Warning: Could not calculate class weights: {e}")
+
     history = model.fit(
         train_generator,
+        steps_per_epoch=steps_per_epoch,
         epochs=epochs,
-        validation_data=validation_generator,
-        callbacks=callbacks,
+        validation_data=validation_data,
+        validation_steps=validation_steps,
+        callbacks=callbacks_list,
+        class_weight=class_weights,
         verbose=1
     )
     

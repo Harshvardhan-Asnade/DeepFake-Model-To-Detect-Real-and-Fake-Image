@@ -37,12 +37,18 @@ Deepfake-System/
 ## 🛠️ Installation
 
 1. **Clone & Setup Environment**:
-   ```bash
-   # Create virtual environment
-   python -m venv venv
-   source venv/bin/activate  # Windows: venv\Scripts\activate
    
-   # Install dependencies
+   **Windows:**
+   ```cmd
+   python -m venv venv
+   venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+   **macOS / Linux:**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
    pip install -r requirements.txt
    ```
 
